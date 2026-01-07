@@ -21,11 +21,6 @@ public protocol AnalyticsTracking {
   func logEvent(_ name: String, parameters: [String: Any]?)
 }
 
-public protocol AuthenticationProvider: Sendable {
-  func getAccessToken() async -> String?
-  func getImpervaToken(url: URL?) async -> String
-}
-
 public protocol CookiesHandling {
   func saveCookies(_ urlResponse: HTTPURLResponse?,
                    request: URLRequest?)
@@ -39,7 +34,6 @@ public protocol InfoLogging {
 public final class NetworkCore {
   public static func setup(_ dependencies: NetworkDependencies) {
     DependencyContainer.shared.setup(networkConfig: dependencies.networkConfig,
-                                     authProvider: dependencies.authProvider,
                                      analytics: dependencies.analytics,
                                      cookiesHandler: dependencies.cookiesHandler,
                                      infoLogger: dependencies.infoLogger)

@@ -5,7 +5,7 @@
 //  Created by Abid Hussain on 30/05/2025.
 //  Copyright © 2025 bayut. All rights reserved.
 
-import AlgoliaSearchClient
+import Search
 
 public protocol SearchService {
   

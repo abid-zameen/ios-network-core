@@ -8,23 +8,10 @@
 import Alamofire
 
 public struct NetworkFactory {
-  
-  public static func createNetworkManager() -> Networking {
     
-    let configs = DependencyContainer.shared.networkConfig
-    let session = Session(interceptor: Interceptor(interceptors: [ImpervaInterceptor(), AuthInterceptor()]),
-                          eventMonitors: [APIRequestsMonitor()])
-    return NetworkManager(session,
-                          configs: configs)
-  }
-}
-
-extension NetworkFactory {
-  public static func createUnauthenticatedNetworkManager() -> Networking {
-    let configs = DependencyContainer.shared.networkConfig
-    let session = Session(interceptor: Interceptor(interceptors: [ImpervaInterceptor()]),
-                          eventMonitors: [APIRequestsMonitor()])
-    return NetworkManager(session,
-                          configs: configs)
-  }
+    public static func createNetworkManager(interceptor: RequestInterceptor) -> Networking {
+        let configs = DependencyContainer.shared.networkConfig
+        let session = Session(interceptor: interceptor, eventMonitors: [APIRequestsMonitor()])
+        return NetworkManager(session, configs: configs)
+    }
 }
