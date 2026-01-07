@@ -5,13 +5,12 @@ import PackageDescription
 let package = Package(
     name: "NetworkLayer",
     platforms: [
-        .iOS(.v15),
-        .macOS(.v11)
+        .iOS(.v16)
     ],
     products: [
         .library(
             name: "NetworkLayer",
-            targets: ["Network", "SearchService"]
+            targets: ["NetworkLayer", "SearchService"]
         )
     ],
     dependencies: [
@@ -20,7 +19,7 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "Network",
+            name: "NetworkLayer",
             dependencies: [
                 "Alamofire"
             ],
@@ -37,7 +36,7 @@ let package = Package(
         ),
         .testTarget(
             name: "NetworkTests",
-            dependencies: ["Network"],
+            dependencies: ["NetworkLayer"],
             path: "NetworkLayer/UnitTests"
         )
     ]

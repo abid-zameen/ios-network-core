@@ -5,7 +5,7 @@
 //  Created by Abid Hussain on 05/06/2025.
 //  Copyright © 2025 bayut. All rights reserved.
 
-import AlgoliaSearchClient
+import Search
 
 public struct SearchResult<T: Codable> {
   public var page: Int?
