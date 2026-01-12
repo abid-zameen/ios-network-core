@@ -54,14 +54,14 @@ extension NetworkManager: Networking {
     }
   }
   
-  public func execute<T: Decodable>(request: APIRequest) async throws -> T? {
+  public func execute<T: Decodable>(request: APIRequest) async throws -> T {
     
     guard let urlRequest = buildURLRequest(request) else {
       throw ServiceError.invalidRequest
     }
     
     if request.cachePolicy != .none {
-      if let cacheData: T? = await getCacheData(urlRequest, cache: request.cachePolicy) {
+      if let cacheData: T = await getCacheData(urlRequest, cache: request.cachePolicy) {
         // For session based cache policies return data from the cache if available and skip the network call.
         if request.cachePolicy == .appSession || request.cachePolicy == .userSession {
           return cacheData
@@ -83,8 +83,11 @@ extension NetworkManager: Networking {
                     with: urlRequest,
                     for: request.cachePolicy)
       }
-      
-      return try? JSONDecoder().decode(T.self, from: data)
+    do {
+        return try JSONDecoder().decode(T.self, from: data)
+    } catch {
+        throw ServiceError.decodingFailed(error)
+    }
     case .failure(let afError):
       throw ServiceError.mapError(afError, response: response.data)
     }
