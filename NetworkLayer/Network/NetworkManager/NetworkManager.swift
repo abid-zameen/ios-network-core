@@ -103,8 +103,18 @@ extension NetworkManager {
   func buildURL(for endpoint: APIRequest) -> URL? {
     var components = URLComponents()
     components.scheme = configs?.httpScheme
-    components.host = configs?.baseURL
     components.path = endpoint.path
+    if var host = configs?.baseURL {
+        if host.lowercased().hasPrefix("https://") {
+            host = String(host.dropFirst(8))
+        } else if host.lowercased().hasPrefix("http://") {
+            host = String(host.dropFirst(7))
+        }
+        if host.hasSuffix("/") {
+            host = String(host.dropLast())
+        }
+        components.host = host
+    }
     return components.url
   }
   

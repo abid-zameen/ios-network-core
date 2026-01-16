@@ -24,6 +24,7 @@ public enum ServiceError: Error {
   case notFound(_ response: Response?)
   case serverError(_ response: Response?)
   case unhandled(_ response: Response?)
+  case networkingNotInitialized
 }
 
 extension ServiceError {
