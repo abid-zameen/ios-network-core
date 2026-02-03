@@ -57,6 +57,10 @@ extension MultipartFormData {
         return .data(data)
       case let fileURL as URL:
         return .fileURL(fileURL)
+      case let string as String:
+        return .string(string)
+      case let int as Int:
+        return .string("\(int)")
       default:
         // TODO: - Move to Analytics Error Logger - NetworkError
         LogPrinter.debug("MultipartFormData: Unsupported value type")
