@@ -13,7 +13,7 @@ public struct SearchRequest {
   public var facets: [String]?
   public var keywords: [String]?
   public var geoFilter: GeoFilter?
-  public var numericFilters: String?
+  public var numericFilters: [String]?
   public var attributesToRetrieve: [String]?
   public var attributesToHighlight: [String]?
   
@@ -23,7 +23,7 @@ public struct SearchRequest {
               hitsPerPage: Int = 30,
               facets: [String]? = nil,
               keywords: [String]? = nil,
-              numericFilters: String? = nil,
+              numericFilters: [String]? = nil,
               attributesToRetrieve: [String]? = nil,
               attributesToHighlight: [String]? = nil,
               geoFilter: GeoFilter? = nil
