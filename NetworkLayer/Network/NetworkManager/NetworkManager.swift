@@ -96,11 +96,84 @@ extension NetworkManager: Networking {
   func setCacheDelegate(_ delegate: CacheDelegate) {
     self.cacheDelegate = delegate
   }
+  
+  // MARK: - Multipart Raw Response Methods
+  public func executeMultiPartRaw(
+    request: APIRequest,
+    progress: @escaping (Double) -> Void
+  ) async throws -> Data {
+    
+    guard let url = getURL(for: request) else {
+      throw ServiceError.invalidRequest
+    }
+    
+    do {
+      let data = try await session
+        .upload(multipartFormData: { $0.append(request.parameters) },
+                to: url,
+                method: .post,
+                headers: HTTPHeaders(request.headers ?? [:]))
+        .uploadProgress { uploadProgress in
+          DispatchQueue.main.async {
+            progress(uploadProgress.fractionCompleted)
+          }
+        }
+        .validate()
+        .serializingData()
+        .value
+      
+      return data
+    } catch let afError as AFError {
+      throw ServiceError.mapError(afError, response: nil)
+    } catch {
+      throw error
+    }
+  }
+  
+  public func executeMultiPartRaw(
+    request: APIRequest,
+    progress: @escaping (Double) -> Void,
+    completion: @escaping (Result<Data, Error>) -> Void
+  ) {
+    
+    guard let url = getURL(for: request) else {
+      completion(.failure(ServiceError.invalidRequest))
+      return
+    }
+    
+    session
+      .upload(multipartFormData: { $0.append(request.parameters) },
+              to: url,
+              method: .post,
+              headers: HTTPHeaders(request.headers ?? [:]))
+      .uploadProgress { uploadProgress in
+        DispatchQueue.main.async {
+          progress(uploadProgress.fractionCompleted)
+        }
+      }
+      .validate()
+      .responseData { response in
+        switch response.result {
+        case .success(let data):
+          completion(.success(data))
+        case .failure(let afError):
+          let responseData = response.data?.convertToReadable()
+          completion(.failure(ServiceError.mapError(afError, response: responseData)))
+        }
+      }
+  }
 }
+
 
 extension NetworkManager {
   
   func buildURL(for endpoint: APIRequest) -> URL? {
+    // If full URL is provided, use it directly
+    if let fullURL = endpoint.fullURL {
+      return URL(string: fullURL)
+    }
+    
+    // Otherwise, build from components as before
     var components = URLComponents()
     components.scheme = configs?.httpScheme
     components.path = endpoint.path
@@ -116,6 +189,13 @@ extension NetworkManager {
         components.host = host
     }
     return components.url
+  }
+  
+  private func getURL(for request: APIRequest) -> URL? {
+    if let fullURL = request.fullURL {
+      return URL(string: fullURL)
+    }
+    return buildURL(for: request)
   }
   
   func buildURLRequest(_ request: APIRequest) -> URLRequest? {
