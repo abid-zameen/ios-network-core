@@ -33,9 +33,19 @@ extension MultipartFormData {
       return
     }
     
-    parameters.forEach { key, value in
+    // Extract non-file parameters and sort them
+    let nonFileParameters = parameters.filter { $0.key != "file" }.sorted { $0.key < $1.key }
+    
+    // Append non-file parameters first
+    nonFileParameters.forEach { key, value in
       let multipartValue = createMultipartValue(from: value)
       multipartValue?.append(to: self, with: key)
+    }
+    
+    // Append file parameter last (Required for S3)
+    if let fileValue = parameters["file"] {
+      let multipartValue = createMultipartValue(from: fileValue)
+      multipartValue?.append(to: self, with: "file")
     }
   }
   
@@ -47,6 +57,10 @@ extension MultipartFormData {
         return .data(data)
       case let fileURL as URL:
         return .fileURL(fileURL)
+      case let string as String:
+        return .string(string)
+      case let int as Int:
+        return .string("\(int)")
       default:
         // TODO: - Move to Analytics Error Logger - NetworkError
         LogPrinter.debug("MultipartFormData: Unsupported value type")

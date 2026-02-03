@@ -12,6 +12,7 @@ enum MultipartValue {
   case data(Data)
   case fileURL(URL)
   case json([String: Any])
+  case string(String)
 }
 
 extension MultipartValue {
@@ -21,6 +22,10 @@ extension MultipartValue {
       multipartFormData.append(url, withName: key)
     case .data(let data):
       multipartFormData.append(data, withName: key)
+    case .string(let string):
+      if let data = string.data(using: .utf8) {
+        multipartFormData.append(data, withName: key)
+      }
     case .json(let jsonDict):
       if let data = jsonDict["data"] as? Data {
         let fileName = jsonDict["fileName"] as? String
