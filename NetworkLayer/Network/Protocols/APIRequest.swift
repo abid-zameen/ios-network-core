@@ -42,4 +42,5 @@ public protocol APIRequest {
   var parameters: [String: Any]? { get set }
   var cachePolicy: CachePolicy { get set }
   var shouldHandleCookies: Bool { get set }
+  var fullURL: String? { get set }
 }

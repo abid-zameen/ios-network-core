@@ -15,6 +15,7 @@ public struct APIRequestBuilder {
     var headers: [String: String]?
     var cachePolicy: CachePolicy
     var shouldHandleCookies: Bool
+    var fullURL: String?
   }
   
   public static func create(path: String,
@@ -23,7 +24,8 @@ public struct APIRequestBuilder {
                             params: [String: Any]? = nil,
                             headers: [String: String]? = nil,
                             cache: CachePolicy = .none,
-                            shouldHandleCookies: Bool = false) -> APIRequest {
+                            shouldHandleCookies: Bool = false,
+                            fullURL: String? = nil) -> APIRequest {
     
     return APIRequestInfo(path: path,
                           method: type,
@@ -31,6 +33,7 @@ public struct APIRequestBuilder {
                           parameters: params,
                           headers: headers,
                           cachePolicy: cache,
-                          shouldHandleCookies: shouldHandleCookies)
+                          shouldHandleCookies: shouldHandleCookies,
+                          fullURL: fullURL)
   }
 }

@@ -5,6 +5,8 @@
 //  Created by Abid Hussain on 08/01/2025.
 //  Copyright © 2025 bayut. All rights reserved.
 
+import Foundation
+
 public protocol CacheDelegate {
     func didReceiveCachedData<T: Decodable>(_ data: T?)
 }
@@ -24,5 +26,16 @@ public protocol Networking {
   )
   
   func executeMultiPart<T: Decodable>(request: APIRequest) async throws -> T?
-  func execute<T: Decodable>(request: APIRequest) async throws -> T?
+  func execute<T: Decodable>(request: APIRequest) async throws -> T
+  
+  func executeMultiPartRaw(
+    request: APIRequest,
+    progress: @escaping (Double) -> Void
+  ) async throws -> Data
+  
+  func executeMultiPartRaw(
+    request: APIRequest,
+    progress: @escaping (Double) -> Void,
+    completion: @escaping (Result<Data, Error>) -> Void
+  )
 }

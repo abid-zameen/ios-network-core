@@ -14,7 +14,7 @@ public enum ServiceError: Error {
   case invalidToken
   case invalidRequest
   case encodingFailed
-  case decodingFailed
+  case decodingFailed(_ error: Error)
   case timeout(_ response: Response?)
   case connectionLost(_ response: Response?)
   case accessExpired(_ response: Response?)
@@ -24,6 +24,7 @@ public enum ServiceError: Error {
   case notFound(_ response: Response?)
   case serverError(_ response: Response?)
   case unhandled(_ response: Response?)
+  case networkingNotInitialized
 }
 
 extension ServiceError {
