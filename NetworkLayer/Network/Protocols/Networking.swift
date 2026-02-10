@@ -27,7 +27,7 @@ public protocol Networking {
   
   func executeMultiPart<T: Decodable>(request: APIRequest) async throws -> T?
   func execute<T: Decodable>(request: APIRequest) async throws -> T
-  
+  func executeWithoutResponse(request: APIRequest) async throws
   func executeMultiPartRaw(
     request: APIRequest,
     progress: @escaping (Double) -> Void

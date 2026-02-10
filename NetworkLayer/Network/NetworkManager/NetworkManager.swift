@@ -92,6 +92,25 @@ extension NetworkManager: Networking {
       throw ServiceError.mapError(afError, response: response.data)
     }
   }
+    
+  public func executeWithoutResponse(request: APIRequest) async throws {
+ 
+    guard let urlRequest = buildURLRequest(request) else {
+      throw ServiceError.invalidRequest
+    }
+ 
+    let response = await session.request(urlRequest)
+      .validate()
+      .serializingData()
+      .response
+ 
+    switch response.result {
+    case .success:
+      return
+    case .failure(let afError):
+      throw ServiceError.mapError(afError, response: response.data)
+    }
+  }
   
   func setCacheDelegate(_ delegate: CacheDelegate) {
     self.cacheDelegate = delegate
