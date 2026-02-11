@@ -38,4 +38,10 @@ public protocol Networking {
     progress: @escaping (Double) -> Void,
     completion: @escaping (Result<Data, Error>) -> Void
   )
+  func executeDownload(
+    request: APIRequest,
+    fileName: String,
+    progress: @escaping (Double) -> Void,
+    completion: @escaping (Result<URL, Error>) -> Void
+  ) -> Void
 }
