@@ -111,6 +111,39 @@ extension NetworkManager: Networking {
       throw ServiceError.mapError(afError, response: response.data)
     }
   }
+    
+  func executeDownload(
+      request: APIRequest,
+      fileName: String,
+      progress: @escaping (Double) -> Void,
+      completion: @escaping (Result<URL, Error>) -> Void
+  ) {
+      guard let urlRequest = buildURLRequest(request) else {
+          completion(.failure(ServiceError.invalidRequest))
+          return
+      }
+      
+      let destination: DownloadRequest.Destination = { _, _ in
+          let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+          let fileURL = documentsURL.appendingPathComponent(fileName)
+          return (fileURL, [.removePreviousFile, .createIntermediateDirectories])
+      }
+      
+      session.download(urlRequest, to: destination)
+          .downloadProgress { downloadProgress in
+              progress(downloadProgress.fractionCompleted)
+          }
+          .validate()
+          .response { response in
+              if let error = response.error {
+                  completion(.failure(ServiceError.mapError(error, response: nil)))
+              } else if let fileURL = response.fileURL {
+                  completion(.success(fileURL))
+              } else {
+                  completion(.failure(ServiceError.invalidRequest))
+              }
+          }
+  }
   
   func setCacheDelegate(_ delegate: CacheDelegate) {
     self.cacheDelegate = delegate
